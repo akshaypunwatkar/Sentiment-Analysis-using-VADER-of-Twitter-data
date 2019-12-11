@@ -7,6 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+setwd('/Users/akshaypunwatkar/Projects/Spark/Twitter_Sentiment_Analysis')
 ```
 
 ```{r Importing Libraries, warning=FALSE, message=FALSE}
@@ -25,34 +26,22 @@ library(wordcloud)
 library(RColorBrewer)
 ```
 
-```{r Setting working directory}
-setwd('/Users/akshaypunwatkar/Projects/Spark/Twitter_Sentiment_Analysis')
-```
 
 # Summary
 
-**A few sentences describing the inferential question(s), the method used and the most important results.**
-
-Sentiment analysis of tweets about the 2020 US Presidential Election candidates was performed. The tweets were streamed from Twitter using Spark streaming with Tweepy, and the streamed tweets were filtered based on the keywords and hashtags mentioned in the tweets corresponding to a candidate. The sentiment behind the tweets was computed using sentiment analysis tool VADER and bag of words model. Subsequently, data was visualized using R for further analysis. 
+Sentiment analysis of tweets about the 2020 US Presidential Election candidates was performed. The tweets were streamed from Twitter using Spark streaming with Tweepy, and the streamed tweets were filtered based on the keywords and hashtags mentioned in the tweets corresponding to a candidate. The sentiment behind the tweets were computed using sentiment analysis tool VADER and Bag of words model. Subsequently, data were analyzed and visualized using R for further analysis. 
 
 # Introduction
 
-**A more in-depth introduction to the inferential question(s) of interest.**
-
-In the age of social media, the fight for the contest, such as US general elections, starts long before the actual event. Even before the major debates and prime-time interviews, the campaign has already begun on Twitter, which is one of the biggest social media platforms of the current age. Furthermore, with the last general elections surrounded by controversies of social media influence on the election results, the effect of such platforms cannot be ignored. **Considering these effect of social media platforms on elections, this project is aimed towards a similar analysis**. Each of the major candidates has a plethora of followers on Twitter, and Twitter acts as a platform for these candidates to showcase their views, plans, and promises. The most followed of them all are US Senators Bernie Sanders and Elizabeth Warren, with nearly 10 Million followers each. Moreover, Twitter also serves as a platform for those millions of users who follow these leaders and reacts to their plans and views via tweets. The primary objective of this project is to analyze the sentiment behind those tweets made by the general audience, and by doing so, develop a generalized view of each candidate among the general public. 
-
-### Primary research questions: 
+In the age of social media, the fight for the contest, such as US general elections, starts long before the actual event. Even before the major debates and prime-time interviews, the campaign has already begun on Twitter, which is one of the biggest social media platforms of the current age. Furthermore, with the last general elections surrounded by controversies of social media influence on the election results, the effect of such platforms cannot be ignored. **Considering these effects of social media platforms on elections, this project is aimed towards a similar analysis**. Each of the major candidates being analyzed has a plethora of followers on Twitter, and Twitter acts as a platform for these candidates to showcase their views, plans, and promises. The most followed of them all are US Senators Bernie Sanders and Elizabeth Warren, with nearly 10 million followers each. Moreover, Twitter also serves as a platform for those millions of users who follow these leaders and reacts to their plans and views via tweets. The primary objective of this project is to analyze the sentiment behind those tweets made by the general audience, and by doing so, develop a generalized view of each candidate among the general public. Sentiment analysis is a sub-field of Natural Language Processing (NLP), which attempts to recognize and extract opinions within a given text. The objective of sentiment analysis is to measure the emotions and sentiments of the writer based on the subjectivity of the text. 
 
 Primarily, this research aims towards answering the following questions:
 
-> **1. What are the sentiment of the public towards the presidential condidates ?**    
-> **2. How the sentiment varies across states ?**     
-> **3. Are certain sentiment biased based on a certain device type (apple/android) ?**     
-> **4. Is there any topic which contributes to certain type of sentiments ?**     
+> * **What is the sentiment of the public towards the presidential candidates ?**
+> * **Is there any topic which contributes to a certain type of sentiments ?**
+> * **Are certain sentiment biased based on a certain device type (apple/android) ?**
+> * **How the sentiment varies across states ?**
 
-# Data
-
-The tweets were streamed in real-time from Twitter over a week using Spark streaming, and Tweepy Application Programming Interface (API). Similarly, tweets made by each of the candidates over the past year was streamed using another twitter's API in python. Data cleaning and processing were performed in Python, followed by an analysis of sentiment using the VADER (Valence Aware Dictionary and sEntiment Reasoner) tool provided by the NLTK (Natural Language Toolkit) package in Python and Bag of words model using different schemes.Subsequent analysis and visualization were performed in R. 
 
 The scope of this sentiment analysis is limited to 6 candidates mentioned below:  
 
@@ -61,11 +50,15 @@ The scope of this sentiment analysis is limited to 6 candidates mentioned below:
 > **3. Joe Biden**	  
 > **4. Andrew Yang**   
 > **5. Pete Buttigieg**    
-> **6. Cory Booker**     
+> **6. Cory Booker**  
 
-Spark is an open-source cluster computing framework licensed under the Apache software foundation. Spark Streaming is an extension of the core Spark API that enables scalable, high-throughput, fault-tolerant stream processing of live data streams.Similarly, Tweepy is an open-source Python API used to communicate with Twitter using user authentication. Spark Streaming and Tweepy were combinedly used for streaming tweets, which were filtered simultaneously using specific keywords relevant to each of the five candidates. Table below shows the list of keywords used for filtering tweets. Thereafter, the tweets were processed and cleaned for sentiment analysis. 
+# Data
 
-The streamed tweet contained several informations. However, only few of those variables were relevant for this analysis. 
+## Data Streaming  
+
+The tweets were streamed in real-time from Twitter over a week using Spark streaming and Tweepy Application Programming Interface (API). Similarly, tweets made by each of the candidates over the past year was streamed using another twitter's API in Python. In total, **65,000** tweets were streamed over a week. Another **26,000** made by the **6** candidates over the past year was also streamed. Data cleaning and processing were performed in Python, followed by an analysis of sentiment using the VADER (Valence Aware Dictionary and sEntiment Reasoner) tool provided by the NLTK (Natural Language Toolkit) package in Python and Bag of words model using different schemes. Subsequent analysis and visualization were performed in R. 
+   
+Spark is an open-source cluster computing framework licensed under the Apache software foundation. Spark Streaming is an extension of the core Spark API that enables scalable, high-throughput, fault-tolerant stream processing of live data streams. Similarly, Tweepy is an open-source Python API used to communicate with Twitter using user authentication. Spark Streaming and Tweepy were combinedly used for streaming tweets, which were filtered simultaneously using specific keywords relevant to each of the six candidates. The table below shows the list of keywords used for filtering tweets. Thereafter, the tweets were processed and cleaned for sentiment analysis. 
 
 ```{r TABLE for Filters, warning=FALSE, warning=FALSE}
 filters = data.frame(rbind(
@@ -76,7 +69,6 @@ filters = data.frame(rbind(
      c('Joe Biden', 'joebiden, biden2020, biden'),
     c('Elizabeth Warren','ElizabethWarren, elizabethwarren, senwarren, SenWarren, ewarren')))
 colnames(filters) = c('Candidate','Filters')
-
 knitr::kable(
   filters[,], 
   format = 'markdown',
@@ -85,56 +77,74 @@ knitr::kable(
 )
 ```
 
+The streamed tweet contained several pieces of information. However, only a few of those variables were relevant for this analysis. Following variables were used:
+
+> **1. Tweet**   
+> **2. Location Information of the user.**    
+> **3. Device Information from which the tweet is made.**  
+
+**Sample observation:**   
+
+*"@BernieSanders We love you, Bernie, but when asked about why you went around sucking HRC's cock in '16, you literal	Twitter Web App	Indiana	Bernie_Sanders.*     
+
+For the Bag of words model, **sentiment140** data (provided by Stanford NLP) was used for training the model. The data consists of 1.6 million tweets labeled positive or negative based on happy or sad emojis in the tweet.    
+
+## Data Processing 
+
+> Locations from the tweets were processed to extract State codes. However, only 50% of tweets ~30,000 appeared to have relevant location information available.   
+
+> In order to create a Bag of words model, the tweets were tokenized and cleaned of any **mention**, **hashtags**, **urls**, **xml/html text** and **byte code**. Subsequently, **Stemming** was performed on the tokens to only keep the root words. Finally, cleaned tokens were joined again to create a tweet.   
+
 ```{r Importing data after VADER}
 stream_tweet = read.csv('Data/Tweets.tsv', sep = '\t',header = F, comment.char = "")
 colnames(stream_tweet) = c('device','candidate','comp_sent','neg_sent','neu_sent',
                             'pos_sent','hashtags','mention','state')
 #dropping the observations for Kamala_Harris as she dropped out of the race
 stream_tweet = stream_tweet[stream_tweet$candidate != "Kamala_Harris",]
-
 cand_tweet = read.csv('Data/Tweets_Cands.tsv', sep = '\t',header = F, comment.char = "")
 colnames(cand_tweet) = c('candidate','comp_sent','neg_sent','neu_sent',
                         'pos_sent','hashtags','mention')
 ```
 
+# Model
+
+For this analysis, sentiment analysis was performed using two models, Bag of words with different schemes (CounterVector, Hashing, and Tfidf) and VADER. 
+
+### BAG OF WORDS
+
+The bag-of-words model is a simplifying representation used in natural language processing and information retrieval. In this model, a text (such as a sentence or a document) is represented as the Bag (multiset) of its words. Sentiment analysis can be performed over the data using a classification model (Navie Bayes Classifier in this case) using the Bag of words. The process of converting the text to a bag of words can be performed using three schemes (Countervecotrizer, hashing vector, and Tfidf).
+
+**1. CounterVector** - Tokenization of word to builds a vocabulary of the words generating a sparse matrix.    
+
+**2. Hasing vector** - Hashing of words to integers to create a sparse matrix of hashed words. 
+
+**3. TFIDF** - *Term frequency - inverse term frequency* method uses Td-idf value. Tdidf is the product of the *how often the word appears in a document* and *how many documents have that word*. Using Tdidf, a sparse matrix of words could be created, which can then used for classification.     
+
+**Due to the unavailability of the resources, the model could not be trained with the entire dataset (1.6 million tweets) using either of the schemes. Subsequently, using a fraction of the data to create a smaller sparse matrix resulted in poor model performance, with an accuracy of ~ 60%. Hence, this model was not used for the final analysis.**  
+
+### VADER   
+
+VADER is a lexicon and rule-based sentiment analysis tool that is specially developed to analyze opinions expressed in social media under the NLTK package in Python. It uses a composition of the lexicon (which is a list of lexicons, e.g., words, which are labeled according to their semantic orientation, i.e., Positive, Negative, or Neutral). For a given text, VADER provides a 4 set of values, the Compound Rating (CR), Positive Score (PoS), Negative Score (NeS), and Neutral Score (NuS). CR is the combined value of all the lexicon ratings in the normalized form, i.e., between -1 to 1, and PoS, NeS, and NuS is the measure of the proportion (probability) of a text belonging to each category. For this analysis, one of polarity (Negative, Neutral, and Positive) was assigned to the tweets using the CR values. The table below illustrates the range of CR and corresponding assigned polarity.   
+
 ```{r Assigning Polarity to Sentiment based on Compound Sentiment value}
 stream_tweet$polarity  = rep("Neutral") 
 stream_tweet[(stream_tweet$comp_sent < -0.05), ]$polarity = "Negative"
 stream_tweet[(stream_tweet$comp_sent > 0.05), ]$polarity = "Positive"
-
 cand_tweet$polarity  = rep("Neutral") 
 cand_tweet[(cand_tweet$comp_sent < -0.05), ]$polarity = "Negative"
 cand_tweet[(cand_tweet$comp_sent > 0.05), ]$polarity = "Positive"
 ```
 
+# Results
 
+The overall sentiment distribution highlighted that a major share (~37%) of tweets made by the user for the candidates was neutral, followed by 33% positive tweets and 28% remaining tweets. Overall the distribution of sentiments seemed balanced. However, the sentiment distribution for the candidates seems largely towards the positive sentiment. On average, 50% of the tweets made by the candidates had positive sentiment associated with them.  
 
-
-# Model
-
-
-
-### VADER
-Sentiment analysis is a sub-field of Natural Language Processing (NLP), which attempts to recognize and extract opinions within a given text. The objective of sentiment analysis is to measure the emotions and sentiments of the writer based on the subjectivity of the text. VADER is one such lexicon and rule-based sentiment analysis tool that is specially developed to analyze opinions expressed in social media. [3] It uses a composition of the lexicon (which is a list of lexicons, e.g., words, which are labeled according to their semantic orientation i.e., Positive, Negative, or Neutral). For a given text, VADER provides a 4 set of values, the Compound Rating (CR), Positive Score (PoS), Negative Score (NeS), and Neutral Score (NuS). CR is the combined value of all the lexicon ratings in the normalized form i.e., between -1 to 1, and PoS, NeS, and NuS is the measure of the proportion (probability) of a text belonging to each category. For this analysis, one of polarity (Negative, Neutral, and Positive) was assigned to the tweets using the CR values. Table 2 illustrates the range of CR and corresponding assigned polarity. 
-
-### Bag of Words
-
-
-
-#### CounterVector
-
-#### Hasing vector
-
-#### TFIDF
-Term frequency - inverse term frequency method was also tried to create sparse matrix. Tdidf is the product of the *how often the word appears in a document* and *how many documents have that word*. Using Tdidf, a sparse matrix of words could be created which can then used for classification.
-
-```{r Plotting OVERALL sentiment distributions, fig.height=2, fig.width=4, fig.align='center'} 
+```{r Plotting OVERALL sentiment distributions, fig.height=1.8, fig.width=4, fig.align='center'} 
 dt = stream_tweet %>%
         group_by(polarity) %>%
           summarise (n = n()) %>%
             mutate(freq = n / sum(n))
 colnames(dt) = c('Polarity','Count','Fractions')
-
 plt1 <-ggplot(dt)+
   geom_bar(aes(x=Polarity, y=Fractions*100, fill=Polarity), stat='identity', width = 0.3) +
   xlab("Polarity of Tweets")+
@@ -149,13 +159,11 @@ plt1 <-ggplot(dt)+
         axis.text.y = element_text(angle = 0, size = 5),
         axis.title.y = element_text(angle = 90, size = 5),
         plot.title = element_text(hjust = 0.5, size = 5)) 
-
 dt = cand_tweet %>%
         group_by(polarity) %>%
           summarise (n = n()) %>%
             mutate(freq = n / sum(n))
 colnames(dt) = c('Polarity','Count','Fractions')
-
 plt2 <-ggplot(dt)+
   geom_bar(aes(x=Polarity, y=Fractions*100, fill=Polarity), stat='identity', width = 0.3) +
   xlab("Polarity of Tweets")+
@@ -170,17 +178,17 @@ plt2 <-ggplot(dt)+
         axis.text.y = element_text(angle = 0, size = 5),
         axis.title.y = element_text(angle = 90, size = 5),
         plot.title = element_text(hjust = 0.5, size = 5)) 
-
 gridExtra::grid.arrange(plt1,plt2,nrow=1)
 ```
 
-```{r Plotting Sentiment distribution for the Candidates, fig.align='center', out.width='60%'}
+Analyzing the tweets tweeted about the candidates individually highlighted **Cory booker** had the highest share of **positive tweets** of all, with about **~45%** positive tweets, followed by **Andrew yang** at around **~41%**. On the contrary, **Elizabeth Warren** and **Joe Biden** appeared to have the highest share of **negative tweets** at about **35%**. Furthermore, analysis of the tweets **made by the candidates** revealed a significant fraction (45-50%) of tweets were associated with positive sentiments. However, 1/3 of the tweets made by Elizabeth Warren and Bernie Sanders appeared to have negative sentiment associated with them.   
+
+```{r Plotting Sentiment distribution for the Candidates}
 dt = stream_tweet %>%
         group_by(candidate,polarity) %>%
           summarise (n = n()) %>%
             mutate(freq = n / sum(n))
 colnames(dt) = c('Candidate','Polarity','Count','Fractions')
-
 plt_fC <- ggplot(dt)+
   geom_bar(aes(x=Polarity, y=Fractions*100, fill=Polarity), stat='identity', width = 0.5) +
   xlab("Polarity of Tweets")+
@@ -193,7 +201,7 @@ plt_fC <- ggplot(dt)+
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 0, size = 8),
         axis.text.y = element_text(angle = 0, size = 8),
-        plot.title = element_text(hjust = 0.5, size = 10),
+        plot.title = element_text(hjust = 0.5, size = 14),
         strip.text = element_text(face="bold", size=9)) +
   facet_wrap(~Candidate, nrow = 6) + 
   coord_flip()
@@ -205,7 +213,6 @@ dt = cand_tweet %>%
           summarise (n = n()) %>%
             mutate(freq = n / sum(n))
 colnames(dt) = c('Candidate','Polarity','Count','Fractions')
-
 plt_bC <- ggplot(dt)+
   geom_bar(aes(x=Polarity, y=Fractions*100, fill=Polarity), stat='identity', width = 0.5) +
   xlab("Polarity of Tweets")+
@@ -218,19 +225,24 @@ plt_bC <- ggplot(dt)+
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 0, size = 8),
         axis.text.y = element_text(angle = 0, size = 8),
-        plot.title = element_text(hjust = 0.5, size = 10),
+        plot.title = element_text(hjust = 0.5, size = 14),
         strip.text = element_text(face="bold", size=9)) +
   facet_wrap(~Candidate, nrow = 6) +
   coord_flip()
-
 gridExtra::grid.arrange(plt_fC,plt_bC, nrow=1)
 ```
+
+Analysis of the **WordCloud** (*Appendix*) of the most frequent words in the tweets made by the candidates provided a few interesting insights. Tweets mentioning **people**, **America**, **thank**, all of which were highly used in the tweets made by **Cory Booker**, can be associated with positive sentiment. It can be inferred that candidate talking about the American people and showing gratitude have more positive sentiment associated with them. On the contrary, candidates mentioning **President**, **Trump** such as **Bernie Sanders**, and **Joe Biden** have higher negative sentiment associated with them. Overall, it can be inferred that in the tweets made by the general public, certain topics generate a positive sentiment, while specific issues tend to change the sentiment towards negative. This might also be because of the current impeachment inquiry for the President, and the tweet might not be negative towards the actual candidate.    
+Few topics such as **Health care** and **gun violence** also appeared promptly in the tweets made by the candidates. This could be indicative of the popular agendas for the 2020 presidential campaigns 
+
+On checking the distribution of devices used for tweeting, it appeared Apple was the most used device followed by Android. However,**distribution of sentiment did not appear to be swayed towards a certain device. **    
+
+Analysis of the state-wise distribution of tweets, California appeared to have the highest share of tweets (~15%) followed by New York, Texas, Florida, and Washington. Texas and Florida appeared to be foremost for negative tweets. While Washington and New York  were the front runners in positive tweets
 
 ```{r Checking for device distribution for the tweets}
 suset_stream_tweet = stream_tweet[stream_tweet$device 
                                   %in% c('Twitter for iPhone','Twitter for iPad',
                                          'Twitter Web App','Twitter for Android'),]
-
 suset_stream_tweet$device = as.character(suset_stream_tweet$device)
 suset_stream_tweet$device = factor(suset_stream_tweet$device, 
                                    levels=c('Twitter for iPhone','Twitter for iPad',
@@ -244,7 +256,6 @@ dt = suset_stream_tweet %>%
           summarise (n = n()) %>%
             mutate(freq = n / sum(n))
 colnames(dt) = c('candidate','device','Count','Fractions')
-
 plt_dc <- ggplot(dt)+
   geom_bar(aes(x=device, y=Fractions*100, fill=device),stat='identity',width = 0.5)+
   xlab("Devices used for Tweeting")+
@@ -261,17 +272,42 @@ plt_dc <- ggplot(dt)+
         strip.background = element_rect(size=1))+
   facet_wrap(~candidate, nrow = 6)+
   coord_flip()
+```
+
+```{r Plotting state wise distribution of tweets}
+dt = stream_tweet %>%
+        filter(state != 'nan') %>%
+        
+        group_by(state) %>%
+          summarise (n = n()) %>%
+            mutate(freq = n / sum(n))
+colnames(dt) = c('state','Count','Fractions')
+
+dt = dt %>% filter(state %in% c('CA','NY','TX','FL','WA'))
+
+plt_state_d <- ggplot(dt)+
+  geom_bar(aes(x=state, y=Fractions*100, fill=state),stat='identity',width = 0.3)+
+  xlab("States")+
+  ylab("Precentage of Tweets")+
+  ggtitle("Distribution of Tweets for different states (Top 5)")+
+  ylim(0,18)+
+  geom_text(data=dt,
+            aes(x=state,y=Fractions*100,label=scales::percent(Fractions)), 
+            hjust = 0.5, vjust = -0.5, angle=0, size=4)+
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 0, size = 8),
+        axis.text.y = element_text(angle = 0, size = 8),
+        plot.title = element_text(hjust = 0.5, size = 14))
+
 
 ```
 
-```{r Plotting distribution of Sentiments based on devices, fig.align='center', fig.width=12, fig.height=5}
+```{r Plotting distribution of Sentiments based on devices, fig.align='center', fig.width=12, fig.height=3}
 dt = suset_stream_tweet %>%
         group_by(polarity,device) %>%
           summarise (n = n()) %>%
             mutate(freq = n / sum(n))
-
 colnames(dt) = c('polarity','device','Count','Fractions')
-
 plt_sd <- ggplot(dt)+
   geom_bar(aes(x=device, y=Fractions*100, fill=device),stat='identity',width = 0.5)+
   xlab("Devices used for Tweeting")+
@@ -284,62 +320,57 @@ plt_sd <- ggplot(dt)+
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 0, size = 8),
         axis.text.y = element_text(angle = 0, size = 8),
-        plot.title = element_text(hjust = 0.5, size = 10),
+        plot.title = element_text(hjust = 0.5, size = 14),
         strip.text = element_text(face="bold", size=9),
         strip.background = element_rect(size=1))+
   facet_wrap(~polarity, nrow = 6)+
   coord_flip()
-
-gridExtra::grid.arrange(plt_dc,plt_sd,nrow=1)
+gridExtra::grid.arrange(plt_sd,plt_state_d,nrow=1)
 ```
 
+\newpage   
 
-```{r Reading tweets by candidates}
-text = read.csv("Data/Tweets_by_candidates.tsv", sep='\t', header= F, 
-                comment.char = '',quote='', stringsAsFactors= F)
-colnames(text) = c('tweet','candidate')
-text$candidate = as.factor(text$candidate)
+Finally, the analysis of the state-wise sentiment distribution of the candidate provided a few interesting information. **Cory Booker** appeared to have the most significant fraction (~50%) of **positive tweets** from the state of New York. **Andrew Yang** also seemed to have considerable fraction of positive tweets from the state of California. Conversely, Elizabeth Warren seemed to have a significant fraction of tweets from the state of Texas towards negative sentiment. Similarly, Joe Biden also appeared to have 1/3 of the tweets associated to negative sentiment in all five states.    
 
-str(text$tweet[1])
+```{r Plotting state wise sentiment distribution for the candidates, fig.align='center', fig.height=4,fig.width=8}
+dt = stream_tweet %>%
+      filter(state != 'nan') %>%
+        filter(state %in% c('CA','NY','TX','FL','WA')) %>%
+        group_by(candidate,state,polarity) %>%
+          summarise (n = n()) %>%
+            mutate(freq = n / sum(n))
+colnames(dt) = c('candidate','state','polarity','Count','Fractions')
+ggplot(dt)+
+  geom_col(aes(x=state, y=Fractions*100, fill=polarity),
+           width = 0.3,position = position_stack(reverse = TRUE))+
+  xlab("States")+
+  ylab("Precentage of Tweets")+
+  ggtitle("Distribution of sentiment in the 5 state for candidates")+
+  geom_text(data=dt,
+            aes(x=state,y=Fractions*100,label=scales::percent(Fractions)), 
+            hjust = 1, vjust = 2, angle=0, size=2,position = 'stack')+
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 0, size = 8),
+        axis.text.y = element_text(angle = 0, size = 8),
+        plot.title = element_text(hjust = 0.5, size = 10))+
+  facet_wrap(~candidate)
 
-txt = cat(text$tweet)
-
-corpus_text = Corpus(VectorSource(txt))
-
-clean_text<-tm_map(corpus_text,stripWhitespace)
-
-clean_text<-tm_map(clean_text,tolower)
-
-clean_text<-tm_map(clean_text,removeNumbers)
-
-clean_text<-tm_map(clean_text,removePunctuation)
-
-clean_text<-tm_map(clean_text,removeWords, stopwords('english'))
-
-clean_text<-tm_map(clean_text,
-                   removeWords, c('and', 'the', 'our', 'that', 'for', 'are', 'also', 'more', 'has', 'must', 'have', 'should', 'this', 'with'))
-
-tdm_tweet<-TermDocumentMatrix (clean_text)
-TDM1<-as.matrix(tdm_tweet)
-v = sort(rowSums(TDM1), decreasing = TRUE)
-summary(v)
-
-wordcloud (clean_text, scale=c(5,0.5), max.words=1, random.order=FALSE, rot.per=0.35, use.r.layout=FALSE, colors=brewer.pal(8, 'Dark2'))
 ```
-
-
-
-\newpage    
 
 # Conclusions
 
-**In this section, you should present the importance of your findings, and describe any limitations of the study. You can also address future work here if there are extensions of your analysis you find interesting, especially those that may address some of the limitations already mentioned.**
+This analysis brings to light several trends among the sentiments towards different candidates competing in the 2020 US General Elections. Senator Elizabeth Warren, who has over 10 million followers on Twitter, did not seem to be much discussed in tweets, which was surprising.  The most popular candidates on the platform were Cory Booker and Andrew Yang. Interestingly, Cory Booker, with just 5 million followers (comapred to other candidates), appeared to have the highest fraction of positive tweets. Also, the most popular device among users appeared to be Apple. California seemed to have the highest fraction of tweets.    
 
-This analysis brings to light several trends among the sentiments towards different candidates competing in the 2020 US General Elections. Senator Elizabeth Warren, who has over 10 million followers on Twitter, did not seem to be much discussed in tweets, which was surprising.  The most popular candidates on the platform were Senators Joe Biden and Bernie Sanders. Interestingly, Mayor Pete Buttigieg, with about 5 million followers, appeared to have the highest fraction of positive tweets. Also, the most popular device among users appeared to be iPhone.
-The analysis provided some useful insights regarding the current popularity of the candidates. However, the analysis has several limitations. The trend in sentiments and the number of tweets varies day to day such that tweets collected on specific days might not reflect the actual sentimental overview of the general public. Additionally, due to the limitation of the number of tweets that can be streamed in a day, the dataset used for this analysis was relatively small. For better analysis, more data is required to be streamed over a sufficient period, especially during events such as debates and talks, followed by sentiment analysis. Further analysis based on different topics discussed in tweets could be performed, which might be able to highlight and quantify the popular topics among the public. 
+The analysis provided some useful insights regarding the current popularity of the candidates. However, the study has several limitations. The trend in sentiments and the number of tweets varies day to day such that tweets collected on specific days might not reflect the actual sentimental overview of the general public. Additionally, due to the limitation of the number of tweets that can be streamed in a day, the dataset used for this analysis was relatively small. For better analysis, more data is required to be streamed over a sufficient period, especially during events such as debates and talks, followed by sentiment analysis. Also, the proposed Bag of words model could not perform well due to computing limitations, which could have provided better insights about the sentiments. Moreover, since both the models, VADER and Bag of words, translate the sentiment based on the lexicon value and does not consider the order of words in a sentence, the sentiment might not be accurately translated.   
+
+Analysis using a recursive deep learning model could be done in the future to analyze the sentiment more accurately. Moreover, the tweets could be classified using topic segmentation, which might be able to provide better insights into the topic that carries a positive or negative sentiment.
+
+*********
+**Git repository - https://github.com/akshaypunwatkar/IDS702 **        
 
 
 
+# Appendix    
 
-
+!["Word Cloud for the Tweets made by the candidates"](WordCloud.png)
 
